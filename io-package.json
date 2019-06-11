@@ -1,0 +1,75 @@
+{
+    "common": {
+        "name": "molohub",
+        "version": "0.0.1",
+        "news": {
+            "0.0.1": {
+                "en": "initial release",
+                "de": "Erstveröffentlichung",
+                "ru": "Начальная версия",
+                "pt": "lançamento inicial",
+                "nl": "Eerste uitgave",
+                "fr": "Première version",
+                "it": "Versione iniziale",
+                "es": "Versión inicial",
+                "pl": "Pierwsze wydanie",
+                "zh-cn": "首次出版"
+            }
+        },
+        "title": "molohub",
+        "titleLang": {
+            "en": "molohub",
+            "de": "Molohub",
+            "ru": "molohub",
+            "pt": "molohub",
+            "nl": "molohub",
+            "fr": "molohub",
+            "it": "molohub",
+            "es": "Molohub",
+            "pl": "molohub",
+            "zh-cn": "molohub"
+        },
+        "desc": {
+            "en": "Connect to ioBroker outside",
+            "de": "Stellen Sie eine Verbindung zu ioBroker außerhalb her",
+            "ru": "Подключиться к ioBroker снаружи",
+            "pt": "Conecte-se ao ioBroker fora",
+            "nl": "Maak een verbinding met ioBroker buiten",
+            "fr": "Connectez-vous à ioBroker à l'extérieur",
+            "it": "Connetti a ioBroker all'esterno",
+            "es": "Conectar a ioBroker fuera",
+            "pl": "Połącz się z ioBroker na zewnątrz",
+            "zh-cn": "在外面连接到ioBroker"
+        },
+        "authors": [
+            "SchumyHao <schumyhaojl@126.com>"
+        ],
+        "keywords": [
+            "reverse-proxy",
+            "molohub"
+        ],
+        "license": "MIT",
+        "platform": "Javascript/Node.js",
+        "main": "build/main.js",
+        "icon": "molohub.png",
+        "enabled": true,
+        "extIcon": "https://raw.githubusercontent.com/smarthomefans/ioBroker.molohub/master/admin/molohub.png",
+        "readme": "https://github.com/smarthomefans/ioBroker.molohub/blob/master/README.md",
+        "loglevel": "info",
+        "mode": "daemon",
+        "type": "communication",
+        "compact": true,
+        "materialize": true,
+        "dependencies": [
+            {
+                "js-controller": ">=1.4.2"
+            }
+        ]
+    },
+    "native": {
+        "option1": true,
+        "option2": "42"
+    },
+    "objects": [],
+    "instanceObjects": []
+}
