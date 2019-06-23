@@ -92,7 +92,12 @@ class Molohub extends utils.Adapter {
     // 	}
     // }
     startMolohub() {
-        this.client = new molohub_1.Client("150.109.43.36", 4443, "127.0.0.1", parseInt(this.config.port, 10));
+        if (typeof this.seed === "undefined") {
+            this.client = new molohub_1.Client("150.109.43.36", 4443, "127.0.0.1", parseInt(this.config.port, 10));
+        }
+        else {
+            this.client = new molohub_1.Client("150.109.43.36", 4443, "127.0.0.1", parseInt(this.config.port, 10), this.seed);
+        }
         this.app = new molohub_1.App(this.client);
         this.client.on("newSeed", (seed) => {
             this.log.info("new seed got " + seed);
@@ -110,8 +115,11 @@ class Molohub extends utils.Adapter {
         this.app.runReverseProxy();
     }
     readObjects(callback) {
-        this.getObject("info.seed", (err, oObj) => {
-            this.log.info(`Get objects ${JSON.stringify(oObj)}`);
+        this.getState("info.seed", (err, state) => {
+            if (state && state.val) {
+                this.seed = state.val;
+                this.log.info(`Get exist seed ${this.seed}`);
+            }
             this.subscribeStates("*");
             callback && callback();
         });

@@ -27,6 +27,7 @@ declare global {
 class Molohub extends utils.Adapter {
     private client?: Client;
     private app?: App;
+    private seed?: string;
 
     public constructor(options: Partial<ioBroker.AdapterOptions> = {}) {
         super({
@@ -108,7 +109,11 @@ class Molohub extends utils.Adapter {
     // }
 
     private startMolohub() {
-        this.client = new Client("150.109.43.36", 4443, "127.0.0.1", parseInt(this.config.port, 10));
+        if (typeof this.seed === "undefined") {
+            this.client = new Client("150.109.43.36", 4443, "127.0.0.1", parseInt(this.config.port, 10));
+        } else {
+            this.client = new Client("150.109.43.36", 4443, "127.0.0.1", parseInt(this.config.port, 10), this.seed);
+        }
         this.app = new App(this.client);
         this.client.on("newSeed", (seed: string) => {
             this.log.info("new seed got " + seed);
@@ -126,9 +131,12 @@ class Molohub extends utils.Adapter {
         this.app.runReverseProxy();
     }
 
-    private readObjects(callback: ()=>void) {
-        this.getObject("info.seed", (err, oObj) => {
-            this.log.info(`Get objects ${JSON.stringify(oObj)}`);
+    private readObjects(callback: () => void) {
+        this.getState("info.seed", (err, state) => {
+            if (state && state.val) {
+                this.seed = state.val;
+                this.log.info(`Get exist seed ${this.seed}`);
+            }
             this.subscribeStates("*");
             callback && callback();
         });
