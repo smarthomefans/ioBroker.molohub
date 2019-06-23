@@ -1,4 +1,8 @@
-![Logo](admin/molohub.png)
+<h1>
+    <img src="admin/molohub.png" width="64"/>
+    ioBroker.molohub
+</h1>
+
 # ioBroker.molohub
 
 [![NPM version](http://img.shields.io/npm/v/iobroker.molohub.svg)](https://www.npmjs.com/package/iobroker.molohub)
@@ -21,22 +25,22 @@ This section is intended for the developer. It can be deleted later
 
 You are almost done, only a few steps left:
 1. Create a new repository on GitHub with the name `ioBroker.molohub`
-1. Initialize the current folder as a new git repository:  
+2. Initialize the current folder as a new git repository:  
     ```bash
     git init
     git add .
     git commit -m "Initial commit"
     ```
-1. Link your local repository with the one on GitHub:  
+3. Link your local repository with the one on GitHub:  
     ```bash
     git remote add origin https://github.com/smarthomefans/ioBroker.molohub
     ```
 
-1. Push all files to the GitHub repo:  
+4. Push all files to the GitHub repo:  
     ```bash
     git push origin master
     ```
-1. Head over to [src/main.ts](src/main.ts) and start programming!
+5. Head over to [src/main.ts](src/main.ts) and start programming!
 
 ### Scripts in `package.json`
 Several npm scripts are predefined for your convenience. You can run them using `npm run <scriptname>`
