@@ -49,20 +49,8 @@ class Molohub extends utils.Adapter {
         // The adapters config (in the instance object everything under the attribute "native") is accessible via
         // this.config:
         this.log.info("reverse proxy port: " + this.config.port);
-        // in this template all states changes inside the adapters namespace are subscribed
-        this.subscribeStates("*");
-        this.client = new Client("150.109.43.36", 4443, "127.0.0.1", parseInt(this.config.port, 10));
-        this.app = new App(this.client);
-        this.client.on("newSeed", (seed: string) => {
-            console.log("new seed got " + seed);
-        })
-        this.client.on("newTunnel", (onlineConfig: any) => {
-            console.log(`OnlineConfig: ${JSON.stringify(onlineConfig)}`);
-        })
-        this.client.on("updateStatus", (status: any) => {
-            console.log(`Update status: ${status}`);
-        });
-        this.app.runReverseProxy();
+        this.setState("info.connection", false, true);
+        this.readObjects(this.startMolohub.bind(this));
     }
 
     /**
@@ -119,6 +107,32 @@ class Molohub extends utils.Adapter {
     // 	}
     // }
 
+    private startMolohub() {
+        this.client = new Client("150.109.43.36", 4443, "127.0.0.1", parseInt(this.config.port, 10));
+        this.app = new App(this.client);
+        this.client.on("newSeed", (seed: string) => {
+            this.log.info("new seed got " + seed);
+            this.setState("info.seed", seed, true);
+        })
+        this.client.on("newTunnel", (onlineConfig: any) => {
+            this.log.info(`OnlineConfig: ${JSON.stringify(onlineConfig)}`);
+        })
+        this.client.on("updateStatus", (status: any) => {
+            this.log.info(`Update status: ${status}`);
+            if (status === "binded") {
+                this.setState("info.connection", true, true);
+            }
+        });
+        this.app.runReverseProxy();
+    }
+
+    private readObjects(callback: ()=>void) {
+        this.getObject("info.seed", (err, oObj) => {
+            this.log.info(`Get objects ${JSON.stringify(oObj)}`);
+            this.subscribeStates("*");
+            callback && callback();
+        });
+    }
 }
 
 if (module.parent) {

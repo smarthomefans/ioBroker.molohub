@@ -35,20 +35,8 @@ class Molohub extends utils.Adapter {
             // The adapters config (in the instance object everything under the attribute "native") is accessible via
             // this.config:
             this.log.info("reverse proxy port: " + this.config.port);
-            // in this template all states changes inside the adapters namespace are subscribed
-            this.subscribeStates("*");
-            this.client = new molohub_1.Client("150.109.43.36", 4443, "127.0.0.1", parseInt(this.config.port, 10));
-            this.app = new molohub_1.App(this.client);
-            this.client.on("newSeed", (seed) => {
-                console.log("new seed got " + seed);
-            });
-            this.client.on("newTunnel", (onlineConfig) => {
-                console.log(`OnlineConfig: ${JSON.stringify(onlineConfig)}`);
-            });
-            this.client.on("updateStatus", (status) => {
-                console.log(`Update status: ${status}`);
-            });
-            this.app.runReverseProxy();
+            this.setState("info.connection", false, true);
+            this.readObjects(this.startMolohub.bind(this));
         });
     }
     /**
@@ -88,6 +76,45 @@ class Molohub extends utils.Adapter {
             // The state was deleted
             this.log.info(`state ${id} deleted`);
         }
+    }
+    // /**
+    //  * Some message was sent to this instance over message box. Used by email, pushover, text2speech, ...
+    //  * Using this method requires "common.message" property to be set to true in io-package.json
+    //  */
+    // private onMessage(obj: ioBroker.Message): void {
+    // 	if (typeof obj === "object" && obj.message) {
+    // 		if (obj.command === "send") {
+    // 			// e.g. send email or pushover or whatever
+    // 			this.log.info("send command");
+    // 			// Send response in callback if required
+    // 			if (obj.callback) this.sendTo(obj.from, obj.command, "Message received", obj.callback);
+    // 		}
+    // 	}
+    // }
+    startMolohub() {
+        this.client = new molohub_1.Client("150.109.43.36", 4443, "127.0.0.1", parseInt(this.config.port, 10));
+        this.app = new molohub_1.App(this.client);
+        this.client.on("newSeed", (seed) => {
+            this.log.info("new seed got " + seed);
+            this.setState("info.seed", seed, true);
+        });
+        this.client.on("newTunnel", (onlineConfig) => {
+            this.log.info(`OnlineConfig: ${JSON.stringify(onlineConfig)}`);
+        });
+        this.client.on("updateStatus", (status) => {
+            this.log.info(`Update status: ${status}`);
+            if (status === "binded") {
+                this.setState("info.connection", true, true);
+            }
+        });
+        this.app.runReverseProxy();
+    }
+    readObjects(callback) {
+        this.getObject("info.seed", (err, oObj) => {
+            this.log.info(`Get objects ${JSON.stringify(oObj)}`);
+            this.subscribeStates("*");
+            callback && callback();
+        });
     }
 }
 if (module.parent) {
