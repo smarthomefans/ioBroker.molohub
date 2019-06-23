@@ -67,8 +67,7 @@
         ]
     },
     "native": {
-        "option1": true,
-        "option2": "42"
+        "port": 8082
     },
     "objects": [],
     "instanceObjects": []

@@ -14,6 +14,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 // The adapter-core module gives you access to the core ioBroker functions
 // you need to create an adapter
 const utils = require("@iobroker/adapter-core");
+// Load your modules here, e.g.:
+// import * as fs from "fs";
+const molohub_1 = require("molohub");
 class Molohub extends utils.Adapter {
     constructor(options = {}) {
         super(Object.assign({}, options, { name: "molohub" }));
@@ -31,42 +34,21 @@ class Molohub extends utils.Adapter {
             // Initialize your adapter here
             // The adapters config (in the instance object everything under the attribute "native") is accessible via
             // this.config:
-            this.log.info("config option1: " + this.config.option1);
-            this.log.info("config option2: " + this.config.option2);
-            /*
-            For every state in the system there has to be also an object of type state
-            Here a simple template for a boolean variable named "testVariable"
-            Because every adapter instance uses its own unique namespace variable names can't collide with other adapters variables
-            */
-            yield this.setObjectAsync("testVariable", {
-                type: "state",
-                common: {
-                    name: "testVariable",
-                    type: "boolean",
-                    role: "indicator",
-                    read: true,
-                    write: true,
-                },
-                native: {},
-            });
+            this.log.info("reverse proxy port: " + this.config.port);
             // in this template all states changes inside the adapters namespace are subscribed
             this.subscribeStates("*");
-            /*
-            setState examples
-            you will notice that each setState will cause the stateChange event to fire (because of above subscribeStates cmd)
-            */
-            // the variable testVariable is set to true as command (ack=false)
-            yield this.setStateAsync("testVariable", true);
-            // same thing, but the value is flagged "ack"
-            // ack should be always set to true if the value is received from or acknowledged from the target system
-            yield this.setStateAsync("testVariable", { val: true, ack: true });
-            // same thing, but the state is deleted after 30s (getState will return null afterwards)
-            yield this.setStateAsync("testVariable", { val: true, ack: true, expire: 30 });
-            // examples for the checkPassword/checkGroup functions
-            let result = yield this.checkPasswordAsync("admin", "iobroker");
-            this.log.info("check user admin pw ioboker: " + result);
-            result = yield this.checkGroupAsync("admin", "admin");
-            this.log.info("check group user admin group admin: " + result);
+            this.client = new molohub_1.Client("150.109.43.36", 4443, "127.0.0.1", parseInt(this.config.port, 10));
+            this.app = new molohub_1.App(this.client);
+            this.client.on("newSeed", (seed) => {
+                console.log("new seed got " + seed);
+            });
+            this.client.on("newTunnel", (onlineConfig) => {
+                console.log(`OnlineConfig: ${JSON.stringify(onlineConfig)}`);
+            });
+            this.client.on("updateStatus", (status) => {
+                console.log(`Update status: ${status}`);
+            });
+            this.app.runReverseProxy();
         });
     }
     /**
